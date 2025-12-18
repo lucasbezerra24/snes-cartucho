@@ -54,6 +54,30 @@
     <div class="status">
         Emulador carregado. Aguardando ROM...
     </div>
+<script src="js/jsnes.min.js"></script>
+
+    <script>
+    const canvas = document.getElementById("snes-canvas");
+    const ctx = canvas.getContext("2d");
+
+    const imageData = ctx.getImageData(0, 0, 256, 224);
+
+    // Inicializa o emulador
+    const nes = new jsnes.NES({
+        onFrame: function (framebuffer_24) {
+            for (let i = 0; i < framebuffer_24.length; i++) {
+                const pixel = framebuffer_24[i];
+                imageData.data[i * 4 + 0] = (pixel >> 16) & 0xff;
+                imageData.data[i * 4 + 1] = (pixel >> 8) & 0xff;
+                imageData.data[i * 4 + 2] = pixel & 0xff;
+                imageData.data[i * 4 + 3] = 0xff;
+            }
+            ctx.putImageData(imageData, 0, 0);
+        }
+    });
+
+    console.log("Emulador conectado ao canvas com sucesso");
+</script>
 
 </body>
 </html>
