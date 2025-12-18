@@ -58,6 +58,8 @@
 
    <script src="js/jsnes.min.js"></script>
 
+<script src="js/jsnes.min.js"></script>
+
 <script>
     const canvas = document.getElementById("snes-canvas");
     const ctx = canvas.getContext("2d");
@@ -65,7 +67,6 @@
     const imageData = ctx.getImageData(0, 0, 256, 224);
     const statusText = document.querySelector(".status");
 
-    // Inicializa o emulador
     const nes = new jsnes.NES({
         onFrame: function (framebuffer_24) {
             for (let i = 0; i < framebuffer_24.length; i++) {
@@ -79,24 +80,26 @@
         }
     });
 
-    console.log("Emulador pronto");
+    statusText.innerText = "Carregando ROM...";
 
-    // 🔹 Carrega ROM
-    fetch("roms/teste.smc")
-        .then(response => response.arrayBuffer())
+    fetch("roms/mario.nes")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("ROM não encontrada");
+            }
+            return response.arrayBuffer();
+        })
         .then(buffer => {
             nes.loadROM(new Uint8Array(buffer));
-            statusText.innerText = "ROM carregada. Iniciando jogo...";
-            console.log("ROM carregada com sucesso");
+            statusText.innerText = "Mario carregado 🎮";
 
-            // Loop de execução (60 FPS)
             setInterval(() => {
                 nes.frame();
             }, 1000 / 60);
         })
         .catch(err => {
             statusText.innerText = "Erro ao carregar ROM";
-            console.error("Erro na ROM:", err);
+            console.error(err);
         });
 </script>
 
