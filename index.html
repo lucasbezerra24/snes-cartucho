@@ -56,11 +56,14 @@
     </div>
 <script src="js/jsnes.min.js"></script>
 
-    <script>
+   <script src="js/jsnes.min.js"></script>
+
+<script>
     const canvas = document.getElementById("snes-canvas");
     const ctx = canvas.getContext("2d");
 
     const imageData = ctx.getImageData(0, 0, 256, 224);
+    const statusText = document.querySelector(".status");
 
     // Inicializa o emulador
     const nes = new jsnes.NES({
@@ -76,7 +79,25 @@
         }
     });
 
-    console.log("Emulador conectado ao canvas com sucesso");
+    console.log("Emulador pronto");
+
+    // 🔹 Carrega ROM
+    fetch("roms/teste.smc")
+        .then(response => response.arrayBuffer())
+        .then(buffer => {
+            nes.loadROM(new Uint8Array(buffer));
+            statusText.innerText = "ROM carregada. Iniciando jogo...";
+            console.log("ROM carregada com sucesso");
+
+            // Loop de execução (60 FPS)
+            setInterval(() => {
+                nes.frame();
+            }, 1000 / 60);
+        })
+        .catch(err => {
+            statusText.innerText = "Erro ao carregar ROM";
+            console.error("Erro na ROM:", err);
+        });
 </script>
 
 </body>
