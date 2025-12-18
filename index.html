@@ -23,9 +23,9 @@
             margin-bottom: 10px;
         }
 
-        #snes-container {
+        #nes-container {
             width: 320px;
-            height: 240px;
+            height: 300px;
             background: #000;
             border: 4px solid #888;
         }
@@ -47,58 +47,59 @@
 
     <h1>🎮 Cartucho NES NFC</h1>
 
-    <div id="snes-container">
-        <canvas id="snes-canvas" width="256" height="224"></canvas>
+    <div id="nes-container">
+        <canvas id="nes-canvas" width="256" height="240"></canvas>
     </div>
 
     <div class="status">Carregando demo...</div>
 
-    <!-- IMPORTA UMA ÚNICA VEZ -->
+    <!-- JSNES -->
     <script src="js/jsnes.min.js"></script>
 
-   <script>
-    const canvas = document.getElementById("snes-canvas");
-    const ctx = canvas.getContext("2d");
-    const statusText = document.querySelector(".status");
+    <script>
+        const canvas = document.getElementById("nes-canvas");
+        const ctx = canvas.getContext("2d");
+        const statusText = document.querySelector(".status");
 
-    const imageData = ctx.getImageData(0, 0, 256, 224);
+        const imageData = ctx.getImageData(0, 0, 256, 240);
 
-    const nes = new JSNES({
-        onFrame: function (framebuffer_24) {
-            for (let i = 0; i < framebuffer_24.length; i++) {
-                const pixel = framebuffer_24[i];
-                imageData.data[i * 4 + 0] = (pixel >> 16) & 0xff;
-                imageData.data[i * 4 + 1] = (pixel >> 8) & 0xff;
-                imageData.data[i * 4 + 2] = pixel & 0xff;
-                imageData.data[i * 4 + 3] = 0xff;
+        const nes = new JSNES({
+            onFrame: function (framebuffer_24) {
+                for (let i = 0; i < framebuffer_24.length; i++) {
+                    const pixel = framebuffer_24[i];
+                    imageData.data[i * 4 + 0] = (pixel >> 16) & 0xff;
+                    imageData.data[i * 4 + 1] = (pixel >> 8) & 0xff;
+                    imageData.data[i * 4 + 2] = pixel & 0xff;
+                    imageData.data[i * 4 + 3] = 0xff;
+                }
+                ctx.putImageData(imageData, 0, 0);
             }
-            ctx.putImageData(imageData, 0, 0);
-        }
-    });
-
-    let running = false;
-
-    fetch("https://unpkg.com/jsnes@0.8.0/examples/roms/croom.nes")
-        .then(res => res.arrayBuffer())
-        .then(buffer => {
-            nes.loadROM(new Uint8Array(buffer));
-            statusText.innerText = "Demo carregada 🎮";
-            running = true;
-            requestAnimationFrame(loop);
-        })
-        .catch(err => {
-            statusText.innerText = "Erro ao carregar ROM";
-            console.error(err);
         });
 
-    function loop() {
-        if (!running) return;
-        nes.frame();
-        requestAnimationFrame(loop);
-    }
-</script>
+        let running = false;
+
+        fetch("https://unpkg.com/jsnes@0.8.0/examples/roms/croom.nes")
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                nes.loadROM(new Uint8Array(buffer));
+                statusText.innerText = "Demo carregada 🎮";
+                running = true;
+                requestAnimationFrame(loop);
+            })
+            .catch(error => {
+                statusText.innerText = "Erro ao carregar a ROM";
+                console.error(error);
+            });
+
+        function loop() {
+            if (!running) return;
+            nes.frame();
+            requestAnimationFrame(loop);
+        }
+    </script>
 
 </body>
 </html>
+
 
 
