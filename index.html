@@ -82,7 +82,8 @@
 
     statusText.innerText = "Carregando ROM...";
 
-    fetch("roms/mario.nes")
+    fetch("https://unpkg.com/jsnes@0.8.0/examples/roms/croom.nes")
+
         .then(response => {
             if (!response.ok) {
                 throw new Error("ROM não encontrada");
