@@ -1,1 +1,2 @@
-console.log("Emulador SNES será iniciado aqui");
+console.log("Emulador SNES inicializado");
+
